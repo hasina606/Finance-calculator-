@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Finance Calculator Hub</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f7fa;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    .navbar {
+      background: #2c3e50;
+      padding: 15px;
+      color: white;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .navbar h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+    .tabs-container {
+      overflow-x: auto;
+      padding: 10px 0;
+      background: #ecf0f1;
+    }
+    .tabs {
+      display: flex;
+      justify-content: flex-start;
+      flex-wrap: nowrap;
+      padding: 0 10px;
+      min-width: max-content;
+    }
+    .tab-button {
+      padding: 10px 15px;
+      border: none;
+      margin: 0 5px;
+      background: #bdc3c7;
+      cursor: pointer;
+      border-radius: 5px 5px 0 0;
+      white-space: nowrap;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    .tab-button.active {
+      background: #3498db;
+      color: white;
+    }
+    .tab-button:hover:not(.active) {
+      background: #95a5a6;
+      color: white;
+    }
+    .container {
+      background: #fff;
+      padding: 25px;
+      border-radius: 8px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.08);
+      max-width: 450px;
+      margin: 20px auto;
+      display: none;
+    }
+    .container.active {
+      display: block;
+      animation: fadeIn 0.5s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    h2 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 20px;
+      font-size: 22px;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      color: #7f8c8d;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    input, select {
+      width: 100%;
+      padding: 12px;
+      margin-top: 8px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      box-sizing: border-box;
+      font-size: 16px;
+      transition: border 0.3s;
+    }
+    input:focus, select:focus {
+      border-color: #3498db;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 25px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+    .result {
+      margin-top: 25px;
+      padding: 18px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      color: #2c3e50;
+      border-left: 4px solid #3498db;
+    }
+    .result h3 {
+      margin-top: 0;
+      color: #3498db;
+      font-size: 18px;
+    }
+    .result-item {
+      display: flex;
+      justify-content: space-between;
+      margin: 10px 0;
+      padding-bottom: 8px;
+      border-bottom: 1px dashed #eee;
+    }
+    .result-value {
+      font-weight: 700;
+      color: #2c3e50;
+    }
+    .footer {
+      text-align: center;
+      padding: 20px;
+      color: #7f8c8d;
+      font-size: 14px;
+      margin-top: 20px;
+    }
+    @media (max-width: 480px) {
+      .container {
+        margin: 15px;
+        padding: 20px;
+      }
+      .tab-button {
+        padding: 8px 12px;
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <h1>Finance Calculator Hub</h1>
+  </div>
+  
+  <div class="tabs-container">
+    <div class="tabs">
+      <button class="tab-button active" onclick="showTab('emi')">EMI</button>
+      <button class="tab-button" onclick="showTab('sip')">SIP</button>
+      <button class="tab-button" onclick="showTab('tax')">Income Tax</button>
+      <button class="tab-button" onclick="showTab('rd')">RD</button>
+      <button class="tab-button" onclick="showTab('fd')">FD</button>
+      <button class="tab-button" onclick="showTab('gst')">GST</button>
+      <button class="tab-button" onclick="showTab('bmi')">BMI</button>
+      <button class="tab-button" onclick="showTab('currency')">Currency</button>
+      <button class="tab-button" onclick="showTab('loan-eligibility')">Loan Eligibility</button>
+      <button class="tab-button" onclick="showTab('home-loan')">Home Loan</button>
+      <button class="tab-button" onclick="showTab('retirement')">Retirement</button>
+    </div>
+  </div>
+
+  <!-- EMI Calculator -->
+  <div id="emi" class="container active">
+    <h2>EMI Calculator</h2>
+    <label for="amount">Loan Amount (₹)</label>
+    <input type="number" id="amount" placeholder="Eg: 500000" />
+
+    <label for="rate">Interest Rate (Annual %)</label>
+    <input type="number" id="rate" placeholder="Eg: 7.5" step="0.01" />
+
+    <label for="tenure">Loan Tenure (in years)</label>
+    <input type="number" id="tenure" placeholder="Eg: 5" />
+
+    <button onclick="calculateEMI()">Calculate EMI</button>
+
+    <div class="result" id="emi-result">
+      <h3>EMI Calculation Result</h3>
+      <div class="result-item">
+        <span>Monthly EMI:</span>
+        <span class="result-value" id="emi-monthly">₹0</span>
+      </div>
+      <div class="result-item">
+        <span>Total Interest:</span>
+        <span class="result-value" id="emi-interest">₹0</span>
+      </div>
+      <div class="result-item">
+        <span>Total Payment:</span>
+        <span class="result-value" id="emi-total">₹0</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIP Calculator -->
+  <div id="sip" class="container">
+    <h2>SIP Calculator</h2>
+    <label for="sip-amount">Monthly Investment (₹)</label>
+    <input type="number" id="sip-amount" placeholder="Eg: 2000" />
+
+    <label for="sip-rate">Expected Annual Return (%)</label>
+    <input type="number" id="sip-rate" placeholder="Eg: 12" step="0.01" />
+
+    <label for="sip-tenure">Investment Period (in years)</label>
+    <input type="number" id="sip-tenure" placeholder="Eg: 10" />
+
+    <button onclick="calculateSIP()">Calculate SIP</button>
+
+    <div class="result" id="sip-result">
+      <h3>SIP Calculation Result</h3>
+      <div class="result-item">
+        <span>Future Value:</span>
+        <span class="result-value" id="sip-future">₹0</span>
+      </div>
+      <div class="result-item">
+        <span>Total Investment:</span>
+        <span class="result-value" id="sip-invested">₹0</span>
+      </div>
+      <div class="result-item">
+        <span>Estimated Returns:</span>
+        <span class="result-value" id="sip-gain">₹0</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Income Tax Calculator -->
+  <div id="tax" class="container">
+    <h2>Income Tax Calculator (India)</h2>
+    <label for="income">Annual Salary Income (₹)</label>
+    <input type="number" id="income" placeholder="Eg: 850000" />
+
+    <label for="regime">Select Tax Regime</label>
+    <select id="regime">
+      <option value="new">New Regime</option>
+      <option value="old">Old Regime</option>
+    </select>
+
+    <button onclick="calculateTax()">Calculate Tax</button>
+
+    <div class="result" id="tax-result">
+      <h3>Tax Calculation Result</h3>
+      <div class="result-item">
+        <span>Estimated Tax:</span>
+        <span class="result-value" id="tax-amount">₹0</span>
+      </div>
+      <div class="result-item">
+        <span>Health & Edu Cess (4%):</span>
+        <span class="result-value" id="tax-cess">₹0</span>
+      </div>
+      <div class="result-item">
+        <span>Total Tax Payable:</span>
+        <span class="result-value" id="tax-total">₹0</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RD Calculator -->
+  <div id="rd" class="container">
+    <h2>Recurring Deposit Calculator</h2>
+    <label for="rd-amount">Monthly Deposit (₹)</label>
+    <input type="number" id="rd-amount" placeholder="Eg: 5000" />
+
+    <label for="rd-rate">Interest Rate (% p.a.)</label>
+    <input type="number" id="rd-rate" placeholder="Eg: 6.5" step="0.01" />
+
+    <label for="rd-tenure">Tenure (in months)</label>
+    <input type="number" id="rd-tenure" placeholder="Eg: 24" />
+
+    <button onclick="calculateRD()">Calculate Maturity</button>
+
+    <div class="result" id="rd-result">
+      <h3>RD Calculation Result</h3>
+      <div class="result-item">
+        <span>Maturity Amount:</span>
+        <span class="result-value" id="rd-maturity">₹0</span>
+      </div>
+      <div class="result-item">
+        <span>Total Deposits:</span>
+        <span class="result-value" id="rd-deposits">₹0</span>
+      </div>
+      <div class="result-item">
+        <span>Interest Earned:</span>
+        <span class="result-value" id="rd-interest">₹0</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- FD Calculator -->
+  <div id="fd" class="container">
+    <h2>Fixed Deposit Calculator</h2>
+    <label for="fd-amount">Deposit Amount (₹)</label>
+    <input type="number" id="fd-amount" placeholder="Eg: 100000" />
+
+    <label for="fd-rate">Interest Rate (% p.a.)</label>
+    <input type="number" id="fd-rate" placeholder="Eg: 7.0" step="0.01" />
+
+    <label for="fd-tenure">Tenure (in years)</label>
+    <input type="number" id="fd-tenure" placeholder="Eg: 3" />
+
+    <label for="fd-compound">Compounding Frequency</label>
+    <select id="fd-compound">
+      <option value="1">Annually</option>
+      <option value="2">Half-Yearly</option>
+      <option value="4">Quarterly</option>
+      <option value="12" selected>Monthly</option>
+    </select>
+
+    <button onclick="calculateFD()">Calculate Maturity</button>
+
+    <div class="result" id="fd-result">
+      <h3>FD Calculation Result</h3>
+      <div class="result-item">
+        <span>Maturity Amount:</span>
+        <span class="result-value" id="fd-maturity">₹0</span>
+      </div>
+      <div class="result-item">
+        <span>Interest Earned:</span>
+        <span class="result-value" id="fd-interest">₹0</span>
+      </div>
+      <div class="result-item">
+        <span>Effective Annual Rate:</span>
+        <span class="result-value" id="fd-effective-rate">0%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- GST Calculator -->
+  <div id="gst" class="container">
+    <h2>GST Calculator</h2>
+    <label for="gst-amount">Original Amount (₹)</label>
+    <input type="number" id="gst-amount" placeholder="Eg: 1000" />
+
+    <label for="gst-rate">GST Rate (%)</label>
+    <select id="gst-rate">
+      <option value="5">5%</option>
+      <option value="12">12%</option>
+      <option value="18" selected>18%</option>
+      <option value="28">28%</option>
+    </select>
+
+    <label for="gst-type">Calculation Type</label>
+    <select id="gst-type">
+      <option value="exclusive">Exclusive of GST</option>
+      <option value="inclusive">Inclusive of GST</option>
+    </select>
+
+    <button onclick="calculateGST()">Calculate GST</button>
+
+    <div class="result" id="gst-result">
+      <h3>GST Calculation Result</h3>
+      <div class="result-item">
+        <span>GST Amount:</span>
+        <span class="result-value" id="gst-tax">₹0</span>
+      </div>
+      <div class="result-item">
+        <span>Net Price:</span>
+        <span class="result-value" id="gst-net">₹0</span>
+      </div>
+      <div class="result-item">
+        <span>Total Price:</span>
+        <span class="result-value" id="gst-total">₹0</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- BMI Calculator -->
+  <div id="bmi" class="container">
+    <h2>BMI Calculator</h2>
+    <label for="bmi-weight">Weight (kg)</label>
+    <input type="number" id="bmi-weight" placeholder="Eg: 65" step="0.1" />
+
+    <label for="bmi-height">Height (cm)</label>
+    <input type="number" id="bmi-height" placeholder="Eg: 170" />
+
+    <button onclick="calculateBMI()">Calculate BMI</button>
+
+    <div class="result" id="bmi-result">
+      <h3>BMI Result</h3>
+      <div class="result-item">
+        <span>Your BMI:</span>
+        <span class="result-value" id="bmi-value">0</span>
+      </div>
+      <div class="result-item">
+        <span>Category:</span>
+        <span class="result-value" id="bmi-category">-</span>
+      </div>
+      <div class="result-item">
+        <span>Healthy Weight Range:</span>
+        <span class="result-value" id="bmi-range">-</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Currency Converter -->
+  <div id="currency" class="container">
+    <h2>Currency Converter</h2>
+    <label for="currency-amount">Amount</label>
+    <input type="number" id="currency-amount" placeholder="Eg: 100" />
+
+    <label for="currency-from">From Currency</label>
+    <select id="currency-from">
+      <option value="USD">US Dollar (USD)</option>
+      <option value="EUR">Euro (EUR)</option>
+      <option value="GBP">British Pound (GBP)</option>
+      <option value="JPY">Japanese Yen (JPY)</option>
+      <option value="AUD">Australian Dollar (AUD)</option>
+      <option value="CAD">Canadian Dollar (CAD)</option>
+      <option value="INR" selected>Indian Rupee (INR)</option>
+    </select>
+
+    <label for="currency-to">To Currency</label>
+    <select id="currency-to">
+      <option value="USD">US Dollar (USD)</option>
+      <option value="EUR">Euro (EUR)</option>
+      <option value="GBP">British Pound (GBP)</option>
+      <option value="JPY">Japanese Yen (JPY)</option>
+      <option value="AUD">Australian Dollar (AUD)</option>
+      <option value="CAD">Canadian Dollar (CAD)</option>
+      <option value="INR" selected>Indian Rupee (INR)</option>
+    </select>
+
+    <button onclick="convertCurrency()">Convert</button>
+
+    <div class="result" id="currency-result">
+      <h3>Conversion Result</h3>
+      <div class="result-item">
+        <span id="currency-from-text">0 USD</span>
+        <span>=</span>
+      </div>
+      <div class="result-item">
+        <span class="result-value" id="currency-to-text">0 INR</span>
+      </div>
+      <div class="result-item">
+        <span>Exchange Rate:</span>
+        <span class="result-value" id="currency-rate">1 USD = 0 INR</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loan Eligibility Calculator -->
+  <div id="loan-eligibility" class="container">
+    <h2>Loan Eligibility Calculator</h2>
+    <label for="loan-income">Monthly Income (₹)</label>
+    <input type="number" id="loan-income" placeholder="Eg: 50000" />
+
+    <label for="loan-expenses">Monthly Expenses (₹)</label>
+    <input type="number" id="loan-expenses" placeholder="Eg: 20000" />
+
+    <label for="loan-tenure">Preferred Tenure (years)</label>
+    <input type="number" id="loan-tenure" placeholder="Eg: 5" />
+
+    <label for="loan-rate">Interest Rate (% p.a.)</label>
+    <input type="number" id="loan-rate" placeholder="Eg: 10.5" step="0.01" />
+
+    <button onclick="calculateLoanEligibility()">Check Eligibility</button>
+
+    <div class="result" id="loan-eligibility-result">
+      <h3>Eligibility Result</h3>
+      <div class="result-item">
+        <span>Eligible Loan Amount:</span>
+        <span class="result-value" id="loan-eligible-amount">₹0</span>
+      </div>
+      <div class="result-item">
+        <span>Estimated EMI:</span>
+        <span class="result-value" id="loan-eligible-emi">₹0</span>
+      </div>
+      <div class="result-item">
+        <span>FOIR (40-50% is ideal):</span>
+        <span class="result-value" id="loan-foir">0%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Home Loan Calculator -->
+  <div id="home-loan" class="container">
+    <h2>Home Loan Calculator</h2>
+    <label for="home-amount">Loan Amount (₹)</label>
+    <input type="number" id="home-amount" placeholder="Eg: 3000000" />
+
+    <label for="home-rate">Interest Rate (% p.a.)</label>
+    <input type="number" id="home-rate" placeholder="Eg: 8.5" step="0.01" />
+
+    <label for="home-tenure">Loan Tenure (years)</label>
+    <input type="number" id="home-tenure" placeholder="Eg: 20" />
+
+    <button onclick="calculateHomeLoan()">Calculate</button>
+
+    <div class="result" id="home-loan-result">
+      <h3>Home Loan Details</h3>
+      <div class="result-item">
+        <span>Monthly EMI:</span>
+        <span class="result-value" id="home-emi">₹0</span>
+      </div>
+      <div class="result-item">
+        <span>Total Interest:</span>
+        <span class="result-value" id="home-total-interest">₹0</span>
+      </div>
+      <div class="result-item">
+        <span>Total Payment:</span>
+        <span class="result-value" id="home-total-payment">₹0</span>
+      </div>
+      <div class="result-item">
+        <span>Principal Amount:</span>
+        <span class="result-value" id="home-principal">₹0</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Retirement Calculator -->
+  <div id="retirement" class="container">
+    <h2>Retirement Calculator</h2>
+    <label for="retirement-current-age">Current Age (years)</label>
+    <input type="number" id="retirement-current-age" placeholder="Eg: 30" />
+
+    <label for="retirement-retirement-age">Retirement Age (years)</label>
+    <input type="number" id="retirement-retirement-age" placeholder="Eg: 60" />
+
+    <label for="retirement-monthly-expenses">Current Monthly Expenses (₹)</label>
+    <input type="number" id="retirement-monthly-expenses" placeholder="Eg: 30000" />
+
+    <label for="retirement-inflation">Expected Inflation Rate (% p.a.)</label>
+    <input type="number" id="retirement-inflation" placeholder="Eg: 6" step="0.1" />
+
+    <label for="retirement-returns">Expected Returns (% p.a.)</label>
+    <input type="number" id="retirement-returns" placeholder="Eg: 8" step="0.1" />
+
+    <button onclick="calculateRetirement()">Calculate</button>
+
+    <div class="result" id="retirement-result">
+      <h3>Retirement Planning</h3>
+      <div class="result-item">
+        <span>Years to Retirement:</span>
+        <span class="result-value" id="retirement-years">0</span>
+      </div>
+      <div class="result-item">
+        <span>Monthly Expenses at Retirement:</span>
+        <span class="result-value" id="retirement-future-expenses">₹0</span>
+      </div>
+      <div class="result-item">
+        <span>Corpus Required:</span>
+        <span class="result-value" id="retirement-corpus">₹0</span>
+      </div>
+      <div class="result-item">
+        <span>Monthly Investment Needed:</span>
+        <span class="result-value" id="retirement-monthly-investment">₹0</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>© 2023 Finance Calculator Hub | All calculators are for informational purposes only</p>
+  </div>
+
+  <script>
+    // Tab navigation
+    function showTab(tabId) {
+      document.querySelectorAll('.container').forEach(tab => tab.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      // Scroll to the calculator container
+      document.getElementById(tabId).scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // EMI Calculator
+    function calculateEMI() {
+      const amount = parseFloat(document.getElementById('amount').value);
+      const rate = parseFloat(document.getElementById('rate').value) / 12 / 100;
+      const tenure = parseFloat(document.getElementById('tenure').value) * 12;
+
+      if (!amount || !rate || !tenure) {
+        alert("Please fill all fields correctly!");
+        return;
+      }
+
+      const emi = (amount * rate * Math.pow(1 + rate, tenure)) / (Math.pow(1 + rate, tenure) - 1);
+      const totalPayment = emi * tenure;
+      const totalInterest = totalPayment - amount;
+
+      document.getElementById('emi-monthly').textContent = `₹${emi.toFixed(2)}`;
+      document.getElementById('emi-interest').textContent = `₹${totalInterest.toFixed(2)}`;
+      document.getElementById('emi-total').textContent = `₹${totalPayment.toFixed(2)}`;
+    }
+
+    // SIP Calculator
+    function calculateSIP() {
+      const amount = parseFloat(document.getElementById('sip-amount').value);
+      const rate = parseFloat(document.getElementById('sip-rate').value) / 12 / 100;
+      const tenure = parseFloat(document.getElementById('sip-tenure').value) * 12;
+
+      if (!amount || !rate || !tenure) {
+        alert("Please fill all fields correctly!");
+        return;
+      }
+
+      const futureValue = amount * ((Math.pow(1 + rate, tenure) - 1) / rate) * (1 + rate);
+      const investedAmount = amount * tenure;
+      const gain = futureValue - investedAmount;
+
+      document.getElementById('sip-future').textContent = `₹${futureValue.toFixed(2)}`;
+      document.getElementById('sip-invested').textContent = `₹${investedAmount.toFixed(2)}`;
+      document.getElementById('sip-gain').textContent = `₹${gain.toFixed(2)}`;
+    }
+
+    // Income Tax Calculator
+    function calculateTax() {
+      const income = parseFloat(document.getElementById('income').value);
+      const regime = document.getElementById('regime').value;
+      let tax = 0;
+
+      if (!income) {
+        alert("Please enter your income");
+        return;
+      }
+
+      if (regime === 'new') {
+        if (income <= 300000) tax = 0;
+        else if (income <= 600000) tax = (income - 300000) * 0.05;
+        else if (income <= 900000) tax = 15000 + (income - 600000) * 0.1;
+        else if (income <= 1200000) tax = 45000 + (income - 900000) * 0.15;
+        else if (income <= 1500000) tax = 90000 + (income - 1200000) * 0.2;
+        else tax = 150000 + (income - 1500000) * 0.3;
+      } else {
+        if (income <= 250000) tax = 0;
+        else if (income <= 500000) tax = (income - 250000) * 0.05;
+        else if (income <= 1000000) tax = 12500 + (income - 500000) * 0.2;
+        else tax = 112500 + (income - 1000000) * 0.3;
+        
+        // Standard deduction for old regime
+        if (income > 50000) tax -= 50000 * 0.1;
+      }
+
+      const cess = tax * 0.04;
+      const totalTax = tax + cess;
+
+      document.getElementById('tax-amount').textContent = `₹${tax.toFixed(2)}`;
+      document.getElementById('tax-cess').textContent = `₹${cess.toFixed(2)}`;
+      document.getElementById('tax-total').textContent = `₹${totalTax.toFixed(2)}`;
+    }
+
+    // RD Calculator
+    function calculateRD() {
+      const amount = parseFloat(document.getElementById('rd-amount').value);
+      const rate = parseFloat(document.getElementById('rd-rate').value) / 100;
+      const tenure = parseFloat(document.getElementById('rd-tenure').value);
+
+      if (!amount || !rate || !tenure) {
+        alert("Please fill all fields correctly!");
+        return;
+      }
+
+      // RD interest is typically compounded quarterly
+      const maturity = amount * tenure + (amount * tenure * (tenure + 1) * rate) / (2 * 4 * 12);
+      const totalDeposits = amount * tenure;
+      const interest = maturity - totalDeposits;
+
+      document.getElementById('rd-maturity').textContent = `₹${maturity.toFixed(2)}`;
+      document.getElementById('rd-deposits').textContent = `₹${totalDeposits.toFixed(2)}`;
+      document.getElementById('rd-interest').textContent = `₹${interest.toFixed(2)}`;
+    }
+
+    // FD Calculator
+    function calculateFD() {
+      const amount = parseFloat(document.getElementById('fd-amount').value);
+      const rate = parseFloat(document.getElementById('fd-rate').value) / 100;
+      const tenure = parseFloat(document.getElementById('fd-tenure').value);
+      const compound = parseInt(document.getElementById('fd-compound').value);
+
+      if (!amount || !rate || !tenure) {
+        alert("Please fill all fields correctly!");
+        return;
+      }
+
+      const maturity = amount * Math.pow(1 + (rate / compound), compound * tenure);
+      const interest = maturity - amount;
+      const effectiveRate = (Math.pow(1 + (rate / compound), compound) - 1) * 100;
+
+      document.getElementById('fd-maturity').textContent = `₹${maturity.toFixed(2)}`;
+      document.getElementById('fd-interest').textContent = `₹${interest.toFixed(2)}`;
+      document.getElementById('fd-effective-rate').textContent = `${effectiveRate.toFixed(2)}%`;
+    }
+
+    // GST Calculator
+    function calculateGST() {
+      const amount = parseFloat(document.getElementById('gst-amount').value);
+      const rate = parseFloat(document.getElementById('gst-rate').value) / 100;
+      const type = document.getElementById('gst-type').value;
+
+      if (!amount) {
+        alert("Please enter the amount");
+        return;
+      }
+
+      let gst, net, total;
+      if (type === 'exclusive') {
+        gst = amount * rate;
+        net = amount;
+        total = amount + gst;
+      } else {
+        net = amount / (1 + rate);
+        gst = amount - net;
+        total = amount;
+      }
+
+      document.getElementById('gst-tax').textContent = `₹${gst.toFixed(2)}`;
+      document.getElementById('gst-net').textContent = `₹${net.toFixed(2)}`;
+      document.getElementById('gst-total').textContent = `₹${total.toFixed(2)}`;
+    }
+
+    // BMI Calculator
+    function calculateBMI() {
+      const weight = parseFloat(document.getElementById('bmi-weight').value);
+      const height = parseFloat(document.getElementById('bmi-height').value) / 100; // convert cm to m
+
+      if (!weight || !height) {
+        alert("Please fill all fields correctly!");
+        return;
+      }
+
+      const bmi = weight / (height * height);
+      let category, healthyMin, healthyMax;
+      
+      if (bmi < 18.5) {
+        category = "Underweight";
+      } else if (bmi < 25) {
+        category = "Normal weight";
+      } else if (bmi < 30) {
+        category = "Overweight";
+      } else {
+        category = "Obese";
+      }
+      
+      healthyMin = (18.5 * height * height).toFixed(1);
+      healthyMax = (25 * height * height).toFixed(1);
+
+      document.getElementById('bmi-value').textContent = bmi.toFixed(1);
+      document.getElementById('bmi-category').textContent = category;
+      document.getElementById('bmi-range').textContent = `${healthyMin}kg - ${healthyMax}kg`;
+    }
+
+    // Currency Converter (using fixed rates for demo)
+    const exchangeRates = {
+      USD: { USD: 1, EUR: 0.85, GBP: 0.73, JPY: 110.5, AUD: 1.35, CAD: 1.25, INR: 75.0 },
+      EUR: { USD: 1.18, EUR: 1, GBP: 0.86, JPY: 130.0, AUD: 1.59, CAD: 1.47, INR: 88.5 },
+      GBP: { USD: 1.37, EUR: 1.16, GBP: 1, JPY: 151.2, AUD: 1.85, CAD: 1.71, INR: 103.0 },
+      JPY: { USD: 0.009, EUR: 0.0077, GBP: 0.0066, JPY: 1, AUD: 0.012, CAD: 0.011, INR: 0.68 },
+      AUD: { USD: 0.74, EUR: 0.63, GBP: 0.54, JPY: 83.3, AUD: 1, CAD: 0.93, INR: 55.5 },
+      CAD: { USD: 0.8, EUR: 0.68, GBP: 0.58, JPY: 90.9, AUD: 1.08, CAD: 1, INR: 60.0 },
+      INR: { USD: 0.013, EUR: 0.011, GBP: 0.0097, JPY: 1.47, AUD: 0.018, CAD: 0.017, INR: 1 }
+    };
+
+    function convertCurrency() {
+      const amount = parseFloat(document.getElementById('currency-amount').value);
+      const from = document.getElementById('currency-from').value;
+      const to = document.getElementById('currency-to').value;
+
+      if (!amount) {
+        alert("Please enter the amount to convert");
+        return;
+      }
+
+      const rate = exchangeRates[from][to];
+      const converted = amount * rate;
+
+      document.getElementById('currency-from-text').textContent = `${amount.toFixed(2)} ${from}`;
+      document.getElementById('currency-to-text').textContent = `${converted.toFixed(2)} ${to}`;
+      document.getElementById('currency-rate').textContent = `1 ${from} = ${rate.toFixed(4)} ${to}`;
+    }
+
+    // Loan Eligibility Calculator
+    function calculateLoanEligibility() {
+      const income = parseFloat(document.getElementById('loan-income').value);
+      const expenses = parseFloat(document.getElementById('loan-expenses').value);
+      const tenure = parseFloat(document.getElementById('loan-tenure').value);
+      const rate = parseFloat(document.getElementById('loan-rate').value) / 100 / 12;
+
+      if (!income || !expenses || !tenure || !rate) {
+        alert("Please fill all fields correctly!");
+        return;
+      }
+
+      // FOIR (Fixed Obligation to Income Ratio) - typically 50-60% of disposable income
+      const disposableIncome = income - expenses;
+      const maxEMI = disposableIncome * 0.5; // Using 50% as safe limit
+      const months = tenure * 12;
+      
+      // Calculate eligible loan amount based on EMI affordability
+      const loanAmount = (maxEMI * (Math.pow(1 + rate, months) - 1)) / (rate * Math.pow(1 + rate, months));
+      const foir = (maxEMI / income) * 100;
+
+      document.getElementById('loan-eligible-amount').textContent = `₹${loanAmount.toFixed(2)}`;
+      document.getElementById('loan-eligible-emi').textContent = `₹${maxEMI.toFixed(2)}`;
+      document.getElementById('loan-foir').textContent = `${foir.toFixed(1)}%`;
+    }
+
+    // Home Loan Calculator
+    function calculateHomeLoan() {
+      const amount = parseFloat(document.getElementById('home-amount').value);
+      const rate = parseFloat(document.getElementById('home-rate').value) / 100 / 12;
+      const tenure = parseFloat(document.getElementById('home-tenure').value) * 12;
+
+      if (!amount || !rate || !tenure) {
+        alert("Please fill all fields correctly!");
+        return;
+      }
+
+      const emi = (amount * rate * Math.pow(1 + rate, tenure)) / (Math.pow(1 + rate, tenure) - 1);
+      const totalPayment = emi * tenure;
+      const totalInterest = totalPayment - amount;
+
+      document.getElementById('home-emi').textContent = `₹${emi.toFixed(2)}`;
+      document.getElementById('home-total-interest').textContent = `₹${totalInterest.toFixed(2)}`;
+      document.getElementById('home-total-payment').textContent = `₹${totalPayment.toFixed(2)}`;
+      document.getElementById('home-principal').textContent = `₹${amount.toFixed(2)}`;
+    }
+
+    // Retirement Calculator
+    function calculateRetirement() {
+      const currentAge = parseFloat(document.getElementById('retirement-current-age').value);
+      const retirementAge = parseFloat(document.getElementById('retirement-retirement-age').value);
+      const monthlyExpenses = parseFloat(document.getElementById('retirement-monthly-expenses').value);
+      const inflation = parseFloat(document.getElementById('retirement-inflation').value) / 100;
+      const returns = parseFloat(document.getElementById('retirement-returns').value) / 100;
+
+      if (!currentAge || !retirementAge || !monthlyExpenses || !inflation || !returns) {
+        alert("Please fill all fields correctly!");
+        return;
+      }
+
+      const yearsToRetirement = retirementAge - currentAge;
+      const annualExpenses = monthlyExpenses * 12;
+      const futureAnnualExpenses = annualExpenses * Math.pow(1 + inflation, yearsToRetirement);
+      
+      // Assuming retirement lasts 25 years and accounting for inflation during retirement
+      const corpus = futureAnnualExpenses * (1 - Math.pow(1 + inflation, 25) / Math.pow(1 + returns, 25)) / (returns - inflation);
+      
+      // Calculate monthly investment needed to reach corpus
+      const monthlyInvestment = corpus / (((Math.pow(1 + returns/12, yearsToRetirement*12) - 1) / (returns/12)) * (1 + returns/12));
+
+      document.getElementById('retirement-years').textContent = yearsToRetirement;
+      document.getElementById('retirement-future-expenses').textContent = `₹${(futureAnnualExpenses/12).toFixed(2)}`;
+      document.getElementById('retirement-corpus').textContent = `₹${corpus.toFixed(2)}`;
+      document.getElementById('retirement-monthly-investment').textContent = `₹${monthlyInvestment.toFixed(2)}`;
+    }
+
+    // Initialize the first tab as active
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('emi').classList.add('active');
+    });
+  </script>
+</body>
+</html>
